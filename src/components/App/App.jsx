@@ -22,26 +22,33 @@ class App extends Component {
     largeImageURL: null,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { searchValue, page } = this.state;
-
-    if (prevState.searchValue !== searchValue || prevState.page !== page) {
-      this.setState({ isLoading: true });
-      try {
-        const images = await fetchImagesWithSearchValue(searchValue, page);
-        if (images.length <= 0) {
-          toast.error('Not result, please input a new search value!');
-        }
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images],
-        }));
-      } catch (error) {
-        this.setState({ error });
-      } finally {
-        this.setState({ isLoading: false });
-      }
+  componentDidUpdate(prevProps, prevState) {
+    const { searchValue } = this.state;
+    if (prevState.searchValue !== searchValue) {
+      this.fetchImages();
     }
   }
+
+  fetchImages = async () => {
+    const { searchValue, page } = this.state;
+    this.setState(({ isLoading }) => ({
+      isLoading: !isLoading,
+    }));
+    try {
+      const images = await fetchImagesWithSearchValue(searchValue, page);
+      if (images.length <= 0) {
+        toast.error('Not result, please input a new search value!');
+      }
+      this.setState(prevState => ({
+        images: [...prevState.images, ...images],
+        page: (prevState.page += 1),
+      }));
+    } catch (error) {
+      this.setState({ error });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
 
   handleSubmitForm = searchValue => {
     this.setState({ searchValue });
@@ -49,9 +56,7 @@ class App extends Component {
   };
 
   handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: (prevState.page += 1),
-    }));
+    this.fetchImages();
   };
 
   resetPage = () => {
