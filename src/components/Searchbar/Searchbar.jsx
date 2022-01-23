@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
+import {
+  Header,
+  SearchForm,
+  SearchFormButton,
+  SearchFormInput,
+} from './Searchbar.styled';
+import { AiOutlineSearch } from 'react-icons/ai';
+import PropTypes from 'prop-types';
 
 class Searchbar extends Component {
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+  };
   state = {
     searchValue: '',
   };
@@ -23,21 +34,21 @@ class Searchbar extends Component {
 
   render() {
     return (
-      <header>
-        <form onSubmit={this.handleSubmit}>
-          <button type="submit">
-            <span>Search</span>
-          </button>
+      <Header>
+        <SearchForm onSubmit={this.handleSubmit}>
+          <SearchFormButton type="submit">
+            <AiOutlineSearch size="28" color="#3f51b5" />
+          </SearchFormButton>
 
-          <input
+          <SearchFormInput
             type="text"
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
             onChange={this.handleChange}
           />
-        </form>
-      </header>
+        </SearchForm>
+      </Header>
     );
   }
 }
