@@ -23,8 +23,9 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { searchValue } = this.state;
-    if (prevState.searchValue !== searchValue) {
+    const { searchValue, page } = this.state;
+
+    if (prevState.searchValue !== searchValue || prevState.page !== page) {
       this.fetchImages();
     }
   }
@@ -35,13 +36,17 @@ class App extends Component {
       isLoading: !isLoading,
     }));
     try {
-      const images = await fetchImagesWithSearchValue(searchValue, page);
-      if (images.length <= 0) {
+      const response = await fetchImagesWithSearchValue(searchValue, page);
+      if (response.length <= 0) {
         toast.error('Not result, please input a new search value!');
       }
+      const images = response.map(({ id, webformatURL, largeImageURL }) => ({
+        id,
+        webformatURL,
+        largeImageURL,
+      }));
       this.setState(prevState => ({
         images: [...prevState.images, ...images],
-        page: (prevState.page += 1),
       }));
     } catch (error) {
       this.setState({ error });
@@ -56,7 +61,9 @@ class App extends Component {
   };
 
   handleLoadMore = () => {
-    this.fetchImages();
+    this.setState(({ page }) => ({
+      page: (page += 1),
+    }));
   };
 
   resetPage = () => {
