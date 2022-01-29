@@ -4,6 +4,7 @@ import { Overlay, ModalCss } from './Modal.styled';
 import PropTypes from 'prop-types';
 
 const modalRoot = document.querySelector('#modal-root');
+
 class Modal extends Component {
   static propTypes = {
     onClose: PropTypes.func.isRequired,
